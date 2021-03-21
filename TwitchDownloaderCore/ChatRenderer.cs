@@ -39,8 +39,14 @@ namespace TwitchDownloaderCore
             string cacheFolder = Path.Combine(tempFolder, "cache");
             try
             {
-                ChatRoot chatJson = ParseJson();
-                List<TwitchComment> finalComments = new List<TwitchComment>();
+               // TODO: handle -second comments
+                
+                //ChatRoot chatJson = ParseJson();
+                ChatRootYT[] chatYTJson = ParseYTJson();
+
+
+                //List<TwitchComment> finalComments = new List<TwitchComment>();
+                List<YoutubeComment> finalComments = new List<YoutubeComment>();
                 List<string> defaultColors = new List<string>() { "#FF0000", "#0000FF", "#00FF00", "#B22222", "#FF7F50", "#9ACD32", "#FF4500", "#2E8B57", "#DAA520", "#D2691E", "#5F9EA0", "#1E90FF", "#FF69B4", "#8A2BE2", "#00FF7F" };
 
                 if (!Directory.Exists(downloadFolder))
@@ -48,7 +54,7 @@ namespace TwitchDownloaderCore
                 if (!Directory.Exists(cacheFolder))
                     Directory.CreateDirectory(cacheFolder);
 
-
+/*
                 progress.Report(new ProgressReport() { reportType = ReportType.Message, data = "Fetching Chat Badges" });
                 List<ChatBadge> chatBadges = await Task.Run(() => TwitchHelper.GetChatBadges(chatJson.streamer.id));
                 progress.Report(new ProgressReport() { reportType = ReportType.Message, data = "Fetching Emotes" });
@@ -58,7 +64,7 @@ namespace TwitchDownloaderCore
                 progress.Report(new ProgressReport() { reportType = ReportType.Message, data = "Fetching Cheer Emotes" });
                 List<CheerEmote> cheerEmotes = await Task.Run(() => TwitchHelper.GetBits(cacheFolder));
                 progress.Report(new ProgressReport() { reportType = ReportType.Message, data = "Fetching Emojis" });
-                Dictionary<string, SKBitmap> emojiCache = await Task.Run(() => TwitchHelper.GetTwitterEmojis(chatJson.comments, cacheFolder));
+                Dictionary<string, SKBitmap> emojiCache = await Task.Run(() => TwitchHelper.GetTwitterEmojis(chatJson.comments, cacheFolder));*/
 
                 CheckCancelation(cancellationToken, downloadFolder);
 
@@ -69,9 +75,10 @@ namespace TwitchDownloaderCore
                 progress.Report(new ProgressReport() { reportType = ReportType.Message, data = "Rendering Comments" });
                 await Task.Run(() =>
                 {
-                    foreach (Comment comment in chatJson.comments)
+                    // Comment comment in chatJson.comments
+                    for(int i = 0; i < chatYTJson.Length; i++)
                     {
-                        if (comment.source != "chat")
+/*                        if (comment.source != "chat")
                             continue;
                         if (comment.message.fragments == null || comment.commenter == null)
                             continue;
@@ -81,10 +88,14 @@ namespace TwitchDownloaderCore
                                 continue;
                             if (!renderOptions.SubMessages && (comment.message.user_notice_params.msg_id == "sub" || comment.message.user_notice_params.msg_id == "resub" || comment.message.user_notice_params.msg_id == "subgift"))
                                 continue;
-                        }
+                        }*/
 
                         Point drawPos = new Point(renderOptions.PaddingLeft, 0);
-                        SKColor userColor = SKColor.Parse(comment.message.user_color != null ? comment.message.user_color : defaultColors[Math.Abs(comment.commenter.display_name.GetHashCode()) % defaultColors.Count]);
+
+                        // TODO: pull colour
+                        //SKColor userColor = SKColor.Parse(comment.message.user_color != null ? comment.message.user_color : defaultColors[Math.Abs(comment.commenter.display_name.GetHashCode()) % defaultColors.Count]);
+                        SKColor userColor = SKColor.Parse("#1E90FF");
+
                         userColor = GenerateUserColor(userColor, renderOptions.BackgroundColor);
 
                         List<SKBitmap> imageList = new List<SKBitmap>();
@@ -92,16 +103,16 @@ namespace TwitchDownloaderCore
                         int default_x = renderOptions.PaddingLeft;
                         bool accentMessage = false;
 
-                        List<GifEmote> currentGifEmotes = new List<GifEmote>();
+/*                        List<GifEmote> currentGifEmotes = new List<GifEmote>();
                         List<SKBitmap> emoteList = new List<SKBitmap>();
-                        List<SKRect> emotePositionList = new List<SKRect>();
+                        List<SKRect> emotePositionList = new List<SKRect>();*/
                         new SKCanvas(sectionImage).Clear(renderOptions.BackgroundColor);
-
+/*
                         if (comment.message.user_notice_params != null && comment.message.user_notice_params.msg_id != null && (comment.message.user_notice_params.msg_id == "sub" || comment.message.user_notice_params.msg_id == "resub" || comment.message.user_notice_params.msg_id == "subgift"))
                         {
                             accentMessage = true;
                             drawPos.X += (int)(8 * renderOptions.EmoteScale);
-                            default_x += (int)(8 * renderOptions.EmoteScale); 
+                            default_x += (int)(8 * renderOptions.EmoteScale);
                             sectionImage = DrawMessage(sectionImage, imageList, renderOptions, currentGifEmotes, messageFont, emojiCache, chatEmotes, thirdPartyEmotes, cheerEmotes, comment, canvasSize, ref drawPos, ref default_x, emoteList, emotePositionList);
                         }
                         else
@@ -111,7 +122,9 @@ namespace TwitchDownloaderCore
                             sectionImage = DrawBadges(sectionImage, imageList, renderOptions, chatBadges, comment, canvasSize, ref drawPos);
                             sectionImage = DrawUsername(sectionImage, imageList, renderOptions, nameFont, comment.commenter.display_name, userColor, canvasSize, ref drawPos);
                             sectionImage = DrawMessage(sectionImage, imageList, renderOptions, currentGifEmotes, messageFont, emojiCache, chatEmotes, thirdPartyEmotes, cheerEmotes, comment, canvasSize, ref drawPos, ref default_x, emoteList, emotePositionList);
-                        }
+                        }*/
+
+                        sectionImage = DrawYTMessage(sectionImage, imageList, renderOptions, messageFont, chatYTJson[i], canvasSize, ref drawPos, ref default_x);
 
                         int finalHeight = 0;
                         foreach (var img in imageList)
@@ -131,7 +144,9 @@ namespace TwitchDownloaderCore
                             finalImageCanvas.DrawRect(renderOptions.PaddingLeft, 0, (int)(4 * renderOptions.EmoteScale), finalHeight - (int)Math.Floor(.4 * renderOptions.SectionHeight), new SKPaint() { Color = SKColor.Parse("#7b2cf2") });
 
                         string imagePath = Path.Combine(downloadFolder, Guid.NewGuid() + ".png");
-                        finalComments.Add(new TwitchComment() { Section = imagePath, SecondsOffset = Double.Parse(comment.content_offset_seconds.ToString()), GifEmotes = currentGifEmotes, NormalEmotes = emoteList, NormalEmotesPositions = emotePositionList });
+                   
+                        // finalComments.Add(new TwitchComment() { Section = imagePath, SecondsOffset = Double.Parse(comment.content_offset_seconds.ToString()), GifEmotes = currentGifEmotes, NormalEmotes = emoteList, NormalEmotesPositions = emotePositionList });
+                        finalComments.Add(new YoutubeComment() { Section = imagePath, SecondsOffset = Double.Parse(chatYTJson[i].time_in_seconds.ToString())});
                         using (Stream s = File.OpenWrite(imagePath))
                         {
                             SKImage saveImage = SKImage.FromBitmap(finalImage);
@@ -144,13 +159,13 @@ namespace TwitchDownloaderCore
                         finalImage.Dispose();
                         finalImageCanvas.Dispose();
 
-                        int percent = (int)Math.Floor(((double)finalComments.Count / (double)chatJson.comments.Count) * 100);
+                        int percent = (int)Math.Floor(((double)finalComments.Count / (double)chatYTJson.Length) * 100);
                         CheckCancelation(cancellationToken, downloadFolder);
                     }
                 });
-                
+
                 progress.Report(new ProgressReport() { reportType = ReportType.MessageInfo, data = "Rendering Video 0%" });
-                await Task.Run(() => RenderVideo(renderOptions, new Queue<TwitchComment>(finalComments.OrderBy(x => x.SecondsOffset)), chatJson, progress), cancellationToken);
+                await Task.Run(() => RenderYTVideo(renderOptions, new Queue<YoutubeComment>(finalComments.OrderBy(x => x.SecondsOffset)), chatYTJson, progress), cancellationToken);
                 progress.Report(new ProgressReport() { reportType = ReportType.Message, data = "Cleaning up..." });
                 Cleanup(downloadFolder);
             }
@@ -429,7 +444,282 @@ namespace TwitchDownloaderCore
                         int timeLeftInt = (int)Math.Floor(100.0 / percentDouble * stopwatch.Elapsed.TotalSeconds) - (int)stopwatch.Elapsed.TotalSeconds;
                         TimeSpan timeLeft = new TimeSpan(0, 0, timeLeftInt);
                         progress.Report(new ProgressReport() { reportType = ReportType.MessageInfo, data = $"Rendering Video {percentInt}% ({timeLeft.ToString(@"h\hm\ms\s")} left)" });
-                    } 
+                    }
+                }
+            }
+            if (renderOptions.GenerateMask)
+            {
+                maskStream.Dispose();
+                maskProcess.WaitForExit();
+            }
+            stopwatch.Stop();
+            progress.Report(new ProgressReport() { reportType = ReportType.Log, data = $"FINISHED. RENDER TIME: {(int)stopwatch.Elapsed.TotalSeconds}s SPEED: {(duration / stopwatch.Elapsed.TotalSeconds).ToString("0.##")}x" });
+            process.WaitForExit();
+        }
+
+        private void RenderYTVideo(ChatRenderOptions renderOptions, Queue<YoutubeComment> finalComments, ChatRootYT[] chatJson, IProgress<ProgressReport> progress = null)
+        {
+            SKBitmap bufferBitmap = new SKBitmap(renderOptions.ChatWidth, renderOptions.ChatHeight);
+            SKCanvas bufferCanvas = new SKCanvas(bufferBitmap);
+            SKPaint gifBackgroundPaint = new SKPaint();
+            SKPaint gifPaint = new SKPaint();
+            int videoStart;
+            int duration;
+
+/*            if (chatJson.video != null)
+            {
+                int startSeconds = (int)Math.Floor(chatJson.video.start);
+                int firstCommentSeconds = (int)Math.Floor(chatJson.comments.First().content_offset_seconds);
+                videoStart = startSeconds < firstCommentSeconds ? startSeconds : firstCommentSeconds;
+                duration = (int)Math.Ceiling(chatJson.video.end) - videoStart;
+            }
+            else
+            {
+                videoStart = (int)Math.Floor(chatJson.comments.First().content_offset_seconds);
+                duration = (int)Math.Ceiling(chatJson.comments.Last().content_offset_seconds) - videoStart;
+            }*/
+
+            videoStart = 0;
+            duration = (int)Math.Ceiling(chatJson[chatJson.Length -1].time_in_seconds);
+
+
+
+
+
+            //List<GifEmote> displayedGifs = new List<GifEmote>();
+
+            if (renderOptions.BackgroundColor.Alpha < 255)
+            {
+                gifPaint.BlendMode = SKBlendMode.SrcOver;
+                gifBackgroundPaint.BlendMode = SKBlendMode.Src;
+            }
+
+            if (File.Exists(renderOptions.OutputFile))
+                File.Delete(renderOptions.OutputFile);
+
+            string inputArgs = renderOptions.InputArgs.Replace("{fps}", renderOptions.Framerate.ToString())
+                .Replace("{height}", renderOptions.ChatHeight.ToString()).Replace("{width}", renderOptions.ChatWidth.ToString())
+                .Replace("{save_path}", renderOptions.OutputFile).Replace("{max_int}", int.MaxValue.ToString());
+            string outputArgs = renderOptions.OutputArgs.Replace("{fps}", renderOptions.Framerate.ToString())
+                .Replace("{height}", renderOptions.ChatHeight.ToString()).Replace("{width}", renderOptions.ChatWidth.ToString())
+                .Replace("{save_path}", renderOptions.OutputFile).Replace("{max_int}", int.MaxValue.ToString());
+
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = renderOptions.FfmpegPath,
+                    Arguments = $"{inputArgs} {outputArgs}",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                }
+            };
+
+            //process.ErrorDataReceived += ErrorDataHandler;
+
+            process.Start();
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            Process maskProcess = null;
+            BinaryWriter maskStream = null;
+            if (renderOptions.GenerateMask)
+            {
+                string outputArgsMask = renderOptions.OutputArgs.Replace("{fps}", renderOptions.Framerate.ToString())
+                .Replace("{height}", renderOptions.ChatHeight.ToString()).Replace("{width}", renderOptions.ChatWidth.ToString())
+                .Replace("{save_path}", renderOptions.OutputFileMask).Replace("{max_int}", int.MaxValue.ToString());
+                maskProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = renderOptions.FfmpegPath,
+                        Arguments = $"{inputArgs} {outputArgsMask}",
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    }
+                };
+
+                if (File.Exists(renderOptions.OutputFileMask))
+                    File.Delete(renderOptions.OutputFileMask);
+
+                maskProcess.Start();
+                maskProcess.BeginErrorReadLine();
+                maskProcess.BeginOutputReadLine();
+                maskStream = new BinaryWriter(maskProcess.StandardInput.BaseStream);
+            }
+
+            using (var ffmpegStream = new BinaryWriter(process.StandardInput.BaseStream))
+            {
+                bufferCanvas.Clear(renderOptions.BackgroundColor);
+                int startTick = (int)Math.Floor(videoStart / (1.0 / renderOptions.Framerate));
+                int endTick = (int)Math.Floor((videoStart + duration) / (1.0 / renderOptions.Framerate));
+                int lastUpdateTick = startTick;
+                int globalTick = startTick;
+                for (int i = startTick; i < endTick; i++)
+                {
+                    int height = 0;
+                    if (globalTick % renderOptions.UpdateFrame == 0)
+                    {
+                        int y = 0;
+/*                        List<GifEmote> old = new List<GifEmote>(displayedGifs);
+                        List<GifEmote> newly_added = new List<GifEmote>();*/
+                        List<YoutubeComment> new_comments = new List<YoutubeComment>();
+
+                        bool isDone = false;
+                        while (finalComments.Count > 0 && !isDone)
+                        {
+                            int commentTick = (int)Math.Floor(finalComments.Peek().SecondsOffset / (1.0 / renderOptions.Framerate));
+                            if (commentTick >= lastUpdateTick && commentTick < globalTick)
+                            {
+                                YoutubeComment currentComment = finalComments.Dequeue();
+/*                                foreach (var emote in currentComment.GifEmotes)
+                                {
+                                    GifEmote newGif = new GifEmote(new Point(emote.Offset.X, emote.Offset.Y + height), emote.Name, emote.Codec, emote.ImageScale, emote.ImageFrames);
+                                    displayedGifs.Add(newGif);
+                                    newly_added.Add(newGif);
+                                }*/
+                                height += SKBitmap.Decode(currentComment.Section).Height;
+                                new_comments.Add(currentComment);
+                            }
+                            else
+                            {
+                                isDone = true;
+                            }
+                        }
+/*                        foreach (var emote in old)
+                            emote.Offset = new Point(emote.Offset.X, emote.Offset.Y - height);
+                        foreach (var emote in newly_added)
+                        {
+                            emote.Offset = new Point(emote.Offset.X, (renderOptions.ChatHeight - height) + emote.Offset.Y);
+                        }*/
+
+
+                        if (height > 0)
+                        {
+/*                            List<SKBitmap> emoteList = new List<SKBitmap>();
+                            List<SKRect> emotePos = new List<SKRect>();*/
+                            SKBitmap sectionBitmap = new SKBitmap(renderOptions.ChatWidth, height);
+                            SKCanvas sectionCanvas = new SKCanvas(sectionBitmap);
+                            sectionCanvas.Clear(renderOptions.BackgroundColor);
+
+                            for (int j = 0; j < new_comments.Count; j++)
+                            {
+                                int commentTick = (int)Math.Floor(new_comments[j].SecondsOffset / (1.0 / renderOptions.Framerate));
+                                if (commentTick >= lastUpdateTick && commentTick < globalTick)
+                                {
+                                    SKBitmap sectionImage = SKBitmap.Decode(new_comments[j].Section);
+                                    sectionCanvas.DrawBitmap(sectionImage, 0, y);
+/*                                    for (int k = 0; k < new_comments[j].NormalEmotes.Count; k++)
+                                    {
+                                        emoteList.Add(new_comments[j].NormalEmotes[k]);
+                                        SKRect refrenceRect = new_comments[j].NormalEmotesPositions[k];
+                                        float top = bufferBitmap.Height - sectionBitmap.Height + y + refrenceRect.Top;
+                                        emotePos.Add(new SKRect(refrenceRect.Left, top, refrenceRect.Right, top + (refrenceRect.Bottom - refrenceRect.Top)));
+                                    }*/
+                                    y += sectionImage.Height;
+                                }
+                            }
+                            if (renderOptions.BackgroundColor.Alpha < 255)
+                            {
+                                SKBitmap bufferCopy = bufferBitmap.Copy();
+                                bufferCanvas.Clear();
+                                bufferCanvas.DrawBitmap(bufferCopy, 0, -height);
+                                bufferCopy.Dispose();
+                            }
+                            else
+                            {
+                                bufferCanvas.DrawBitmap(bufferBitmap, 0, -height);
+                            }
+                            bufferCanvas.DrawBitmap(sectionBitmap, 0, renderOptions.ChatHeight - height);
+/*
+                            for (int k = 0; k < emoteList.Count; k++)
+                                bufferCanvas.DrawBitmap(emoteList[k], emotePos[k], emotePaint);*/
+
+/*                            foreach (var emote in newly_added)
+                            {
+                                float temp_x = (float)emote.Offset.X;
+                                float temp_y = (float)emote.Offset.Y + (int)Math.Floor((renderOptions.SectionHeight - ((emote.ImageFrames.First().Height / emote.ImageScale) * renderOptions.EmoteScale)) / 2.0);
+                                SKRect copyRect = new SKRect(temp_x, temp_y, temp_x + (float)((emote.ImageFrames.First().Width / emote.ImageScale) * renderOptions.EmoteScale), temp_y + (float)((emote.ImageFrames.First().Height / emote.ImageScale) * renderOptions.EmoteScale));
+                                emote.BackgroundImage = new SKBitmap((int)copyRect.Width, (int)copyRect.Height);
+                                using (SKCanvas tempCanvas = new SKCanvas(emote.BackgroundImage))
+                                {
+                                    tempCanvas.Clear(renderOptions.BackgroundColor);
+                                    tempCanvas.DrawBitmap(bufferBitmap, copyRect,
+                                        new SKRect(0, 0, copyRect.Width, copyRect.Height));
+                                }
+                            }*/
+                        }
+                        lastUpdateTick = globalTick;
+                    }
+
+                    /*List<GifEmote> to_remove = new List<GifEmote>();*/
+/*                    foreach (var emote in displayedGifs)
+                    {
+                        if (emote.Offset.Y < -emote.Width - renderOptions.ChatHeight)
+                        {
+                            to_remove.Add(emote);
+                        }
+                        else
+                        {
+                            int gifTime = (int)Math.Floor((1.5 * globalTick / (renderOptions.Framerate / 60.0)) % emote.TotalDuration);
+                            int frame = emote.FrameCount - 1;
+                            int timeCount = 0;
+                            for (int k = 0; k < emote.DurationList.Count; k++)
+                            {
+                                if (timeCount + emote.DurationList[k] > gifTime)
+                                {
+                                    frame = k;
+                                    break;
+                                }
+                                timeCount += emote.DurationList[k];
+                            }
+
+                            SKBitmap gifBitmap = emote.ImageFrames[frame];
+                            float x = (float)emote.Offset.X;
+                            float y = (float)emote.Offset.Y + (int)Math.Floor((renderOptions.SectionHeight - ((gifBitmap.Height / emote.ImageScale) * renderOptions.EmoteScale)) / 2.0);
+                            bufferCanvas.DrawBitmap(gifBitmap, new SKRect(x, y, x + (float)((gifBitmap.Width / emote.ImageScale) * renderOptions.EmoteScale), y + (float)((gifBitmap.Height / emote.ImageScale) * renderOptions.EmoteScale)), gifPaint);
+                        }
+                    }
+
+                    foreach (var emote in to_remove)
+                    {
+                        displayedGifs.Remove(emote);
+                    }*/
+
+                    var pix = bufferBitmap.PeekPixels();
+                    var data = SKData.Create(pix.GetPixels(), pix.Info.BytesSize);
+                    var bytes = data.ToArray();
+                    ffmpegStream.Write(bytes);
+                    if (renderOptions.GenerateMask)
+                    {
+                        byte[] bytesMask = GetMaskBytes(bufferBitmap, renderOptions);
+                        maskStream.Write(bytesMask);
+                    }
+
+/*                    foreach (var emote in displayedGifs)
+                    {
+                        SKRect drawRect = new SKRect((float)emote.Offset.X, (float)emote.Offset.Y + (int)Math.Floor((renderOptions.SectionHeight - ((emote.Height / emote.ImageScale) * renderOptions.EmoteScale)) / 2.0), (float)emote.Offset.X + (float)((emote.Width / emote.ImageScale) * renderOptions.EmoteScale), (float)emote.Offset.Y + (int)Math.Floor((renderOptions.SectionHeight - ((emote.Height / emote.ImageScale) * renderOptions.EmoteScale)) / 2.0) + (float)((emote.Height / emote.ImageScale) * renderOptions.EmoteScale));
+                        bufferCanvas.DrawBitmap(emote.BackgroundImage, drawRect, gifBackgroundPaint);
+                    }*/
+                    globalTick += 1;
+                    double percentDouble = (double)(globalTick - startTick) / (double)(endTick - startTick) * 100.0;
+                    int percentInt = (int)Math.Floor(percentDouble);
+                    if (progress != null)
+                    {
+                        progress.Report(new ProgressReport() { reportType = ReportType.Percent, data = percentInt });
+                        int timeLeftInt = (int)Math.Floor(100.0 / percentDouble * stopwatch.Elapsed.TotalSeconds) - (int)stopwatch.Elapsed.TotalSeconds;
+                        TimeSpan timeLeft = new TimeSpan(0, 0, timeLeftInt);
+                        progress.Report(new ProgressReport() { reportType = ReportType.MessageInfo, data = $"Rendering Video {percentInt}% ({timeLeft.ToString(@"h\hm\ms\s")} left)" });
+                    }
                 }
             }
             if (renderOptions.GenerateMask)
@@ -668,13 +958,13 @@ namespace TwitchDownloaderCore
 
                                 for (int j = 0; j < charList.Count; j++)
                                 {
-                                    if (char.IsHighSurrogate(charList[j]) && j+1 < charList.Count && char.IsLowSurrogate(charList[j+1]))
+                                    if (char.IsHighSurrogate(charList[j]) && j + 1 < charList.Count && char.IsLowSurrogate(charList[j + 1]))
                                     {
                                         if (messageBuffer != "")
                                             sectionImage = DrawText(sectionImage, messageBuffer, messageFont, imageList, renderOptions, currentGifEmotes, canvasSize, ref drawPos, true, default_x);
-                                        SKPaint fallbackFont = GetFallbackFont(char.ConvertToUtf32(charList[j], charList[j+1]), renderOptions);
+                                        SKPaint fallbackFont = GetFallbackFont(char.ConvertToUtf32(charList[j], charList[j + 1]), renderOptions);
                                         fallbackFont.Color = renderOptions.MessageColor;
-                                        sectionImage = DrawText(sectionImage, charList[j].ToString() + charList[j+1].ToString(), fallbackFont, imageList, renderOptions, currentGifEmotes, canvasSize, ref drawPos, false, default_x);
+                                        sectionImage = DrawText(sectionImage, charList[j].ToString() + charList[j + 1].ToString(), fallbackFont, imageList, renderOptions, currentGifEmotes, canvasSize, ref drawPos, false, default_x);
                                         messageBuffer = "";
                                         j++;
                                     }
@@ -760,6 +1050,23 @@ namespace TwitchDownloaderCore
             imageList.Add(paddingImage);
             return sectionImage;
         }
+
+        public static SKBitmap DrawYTMessage(SKBitmap sectionImage, List<SKBitmap> imageList, ChatRenderOptions renderOptions, SKPaint messageFont, ChatRootYT chatRootYT, Size canvasSize, ref Point drawPos, ref int default_x)
+        {
+            string emojiRegex = "[#*0-9]\uFE0F\u20E3|[\u00A9\u00AE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618]|\u261D(?:\uD83C[\uDFFB-\uDFFF])?|[\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u265F\u2660\u2663\u2665\u2666\u2668\u267B\u267E\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7\u26F8]|\u26F9(?:\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?|\uFE0F\u200D[\u2640\u2642]\uFE0F)?|[\u26FA\u26FD\u2702\u2705\u2708\u2709]|[\u270A-\u270D](?:\uD83C[\uDFFB-\uDFFF])?|[\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C(?:[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A]|\uDDE6\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF]|\uDDE7\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF]|\uDDE8\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF]|\uDDE9\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF]|\uDDEA\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA]|\uDDEB\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7]|\uDDEC\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE]|\uDDED\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA]|\uDDEE\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9]|\uDDEF\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5]|\uDDF0\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF]|\uDDF1\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE]|\uDDF2\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF]|\uDDF3\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF]|\uDDF4\uD83C\uDDF2|\uDDF5\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE]|\uDDF6\uD83C\uDDE6|\uDDF7\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC]|\uDDF8\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF]|\uDDF9\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF]|\uDDFA\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF]|\uDDFB\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA]|\uDDFC\uD83C[\uDDEB\uDDF8]|\uDDFD\uD83C\uDDF0|\uDDFE\uD83C[\uDDEA\uDDF9]|\uDDFF\uD83C[\uDDE6\uDDF2\uDDFC]|[\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF84]|\uDF85(?:\uD83C[\uDFFB-\uDFFF])?|[\uDF86-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFC1]|\uDFC2(?:\uD83C[\uDFFB-\uDFFF])?|[\uDFC3\uDFC4](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDFC5\uDFC6]|\uDFC7(?:\uD83C[\uDFFB-\uDFFF])?|[\uDFC8\uDFC9]|\uDFCA(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDFCB\uDFCC](?:\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?|\uFE0F\u200D[\u2640\u2642]\uFE0F)?|[\uDFCD-\uDFF0]|\uDFF3(?:\uFE0F\u200D\uD83C\uDF08)?|\uDFF4(?:\u200D\u2620\uFE0F|\uDB40\uDC67\uDB40\uDC62\uDB40(?:\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDC73\uDB40\uDC63\uDB40\uDC74|\uDC77\uDB40\uDC6C\uDB40\uDC73)\uDB40\uDC7F)?|[\uDFF5\uDFF7-\uDFFF])|\uD83D(?:[\uDC00-\uDC14]|\uDC15(?:\u200D\uD83E\uDDBA)?|[\uDC16-\uDC40]|\uDC41(?:\uFE0F\u200D\uD83D\uDDE8\uFE0F)?|[\uDC42\uDC43](?:\uD83C[\uDFFB-\uDFFF])?|[\uDC44\uDC45]|[\uDC46-\uDC50](?:\uD83C[\uDFFB-\uDFFF])?|[\uDC51-\uDC65]|[\uDC66\uDC67](?:\uD83C[\uDFFB-\uDFFF])?|\uDC68(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\u2764\uFE0F\u200D\uD83D(?:\uDC8B\u200D\uD83D)?\uDC68|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D(?:\uDC66(?:\u200D\uD83D\uDC66)?|\uDC67(?:\u200D\uD83D[\uDC66\uDC67])?|[\uDC68\uDC69]\u200D\uD83D(?:\uDC66(?:\u200D\uD83D\uDC66)?|\uDC67(?:\u200D\uD83D[\uDC66\uDC67])?)|[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C(?:\uDFFB(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD]))?|\uDFFC(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?|\uDFFD(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D\uDC68\uD83C[\uDFFB\uDFFC]|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?|\uDFFE(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D\uDC68\uD83C[\uDFFB-\uDFFD]|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?|\uDFFF(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D\uDC68\uD83C[\uDFFB-\uDFFE]|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?))?|\uDC69(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\u2764\uFE0F\u200D\uD83D(?:\uDC8B\u200D\uD83D)?[\uDC68\uDC69]|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D(?:\uDC66(?:\u200D\uD83D\uDC66)?|\uDC67(?:\u200D\uD83D[\uDC66\uDC67])?|\uDC69\u200D\uD83D(?:\uDC66(?:\u200D\uD83D\uDC66)?|\uDC67(?:\u200D\uD83D[\uDC66\uDC67])?)|[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C(?:\uDFFB(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D\uDC68\uD83C[\uDFFC-\uDFFF]|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?|\uDFFC(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D(?:\uDC68\uD83C[\uDFFB\uDFFD-\uDFFF]|\uDC69\uD83C\uDFFB)|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?|\uDFFD(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D(?:\uDC68\uD83C[\uDFFB\uDFFC\uDFFE\uDFFF]|\uDC69\uD83C[\uDFFB\uDFFC])|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?|\uDFFE(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D(?:\uDC68\uD83C[\uDFFB-\uDFFD\uDFFF]|\uDC69\uD83C[\uDFFB-\uDFFD])|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?|\uDFFF(?:\u200D(?:[\u2695\u2696\u2708]\uFE0F|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E(?:\uDD1D\u200D\uD83D[\uDC68\uDC69]\uD83C[\uDFFB-\uDFFE]|[\uDDAF-\uDDB3\uDDBC\uDDBD])))?))?|\uDC6A|[\uDC6B-\uDC6D](?:\uD83C[\uDFFB-\uDFFF])?|\uDC6E(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDC6F(?:\u200D[\u2640\u2642]\uFE0F)?|\uDC70(?:\uD83C[\uDFFB-\uDFFF])?|\uDC71(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDC72(?:\uD83C[\uDFFB-\uDFFF])?|\uDC73(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDC74-\uDC76](?:\uD83C[\uDFFB-\uDFFF])?|\uDC77(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDC78(?:\uD83C[\uDFFB-\uDFFF])?|[\uDC79-\uDC7B]|\uDC7C(?:\uD83C[\uDFFB-\uDFFF])?|[\uDC7D-\uDC80]|[\uDC81\uDC82](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDC83(?:\uD83C[\uDFFB-\uDFFF])?|\uDC84|\uDC85(?:\uD83C[\uDFFB-\uDFFF])?|[\uDC86\uDC87](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDC88-\uDCA9]|\uDCAA(?:\uD83C[\uDFFB-\uDFFF])?|[\uDCAB-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73]|\uDD74(?:\uD83C[\uDFFB-\uDFFF])?|\uDD75(?:\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?|\uFE0F\u200D[\u2640\u2642]\uFE0F)?|[\uDD76-\uDD79]|\uDD7A(?:\uD83C[\uDFFB-\uDFFF])?|[\uDD87\uDD8A-\uDD8D]|[\uDD90\uDD95\uDD96](?:\uD83C[\uDFFB-\uDFFF])?|[\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE44]|[\uDE45-\uDE47](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDE48-\uDE4A]|\uDE4B(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDE4C(?:\uD83C[\uDFFB-\uDFFF])?|[\uDE4D\uDE4E](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDE4F(?:\uD83C[\uDFFB-\uDFFF])?|[\uDE80-\uDEA2]|\uDEA3(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDEA4-\uDEB3]|[\uDEB4-\uDEB6](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDEB7-\uDEBF]|\uDEC0(?:\uD83C[\uDFFB-\uDFFF])?|[\uDEC1-\uDEC5\uDECB]|\uDECC(?:\uD83C[\uDFFB-\uDFFF])?|[\uDECD-\uDED2\uDED5\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEFA\uDFE0-\uDFEB])|\uD83E(?:[\uDD0D\uDD0E]|\uDD0F(?:\uD83C[\uDFFB-\uDFFF])?|[\uDD10-\uDD17]|[\uDD18-\uDD1C](?:\uD83C[\uDFFB-\uDFFF])?|\uDD1D|[\uDD1E\uDD1F](?:\uD83C[\uDFFB-\uDFFF])?|[\uDD20-\uDD25]|\uDD26(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDD27-\uDD2F]|[\uDD30-\uDD36](?:\uD83C[\uDFFB-\uDFFF])?|\uDD37(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDD38\uDD39](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDD3A|\uDD3C(?:\u200D[\u2640\u2642]\uFE0F)?|[\uDD3D\uDD3E](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDD3F-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDB4]|[\uDDB5\uDDB6](?:\uD83C[\uDFFB-\uDFFF])?|\uDDB7|[\uDDB8\uDDB9](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDDBA|\uDDBB(?:\uD83C[\uDFFB-\uDFFF])?|[\uDDBC-\uDDCA]|[\uDDCD-\uDDCF](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|\uDDD0|\uDDD1(?:\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83C(?:\uDFFB(?:\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFB)?|\uDFFC(?:\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C[\uDFFB\uDFFC])?|\uDFFD(?:\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C[\uDFFB-\uDFFD])?|\uDFFE(?:\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C[\uDFFB-\uDFFE])?|\uDFFF(?:\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C[\uDFFB-\uDFFF])?))?|[\uDDD2-\uDDD5](?:\uD83C[\uDFFB-\uDFFF])?|\uDDD6(?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDDD7-\uDDDD](?:\u200D[\u2640\u2642]\uFE0F|\uD83C[\uDFFB-\uDFFF](?:\u200D[\u2640\u2642]\uFE0F)?)?|[\uDDDE\uDDDF](?:\u200D[\u2640\u2642]\uFE0F)?|[\uDDE0-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])";
+            //int bitsCount = comment.message.bits_spent;
+            // var fragment in comment.message.fragments
+
+            sectionImage = DrawYTText(sectionImage, chatRootYT.message, messageFont, imageList, renderOptions, canvasSize, ref drawPos, true, default_x);
+
+            imageList.Add(sectionImage);
+
+            SKBitmap paddingImage = new SKBitmap((int)canvasSize.Width, (int)Math.Floor(.4 * renderOptions.SectionHeight));
+            using (SKCanvas paddingImageCanvas = new SKCanvas(paddingImage))
+                paddingImageCanvas.Clear(renderOptions.BackgroundColor);
+            imageList.Add(paddingImage);
+            return sectionImage;
+        }
         public static SKBitmap DrawText(SKBitmap sectionImage, string message, SKPaint messageFont, List<SKBitmap> imageList, ChatRenderOptions renderOptions, List<GifEmote> currentGifEmotes, Size canvasSize, ref Point drawPos, bool padding, int default_x)
         {
             float textWidth;
@@ -787,7 +1094,46 @@ namespace TwitchDownloaderCore
             drawPos.X += (int)Math.Floor(textWidth + (padding ? (int)Math.Floor(4 * renderOptions.EmoteScale) : 0));
             return sectionImage;
         }
+
+        public static SKBitmap DrawYTText(SKBitmap sectionImage, string message, SKPaint messageFont, List<SKBitmap> imageList, ChatRenderOptions renderOptions, Size canvasSize, ref Point drawPos, bool padding, int default_x)
+        {
+            float textWidth;
+            try
+            {
+                textWidth = messageFont.MeasureText(message);
+            }
+            catch { return sectionImage; }
+            if (drawPos.X + textWidth + 3 > canvasSize.Width)
+                sectionImage = AddYTImageSection(sectionImage, imageList, renderOptions, canvasSize, ref drawPos, default_x);
+
+            float xPos = (float)drawPos.X;
+            float yPos = (float)(((canvasSize.Height - renderOptions.FontSize) / 2) + renderOptions.FontSize) - (float)(renderOptions.EmoteScale * 2);
+            using (SKCanvas sectionImageCanvas = new SKCanvas(sectionImage))
+            {
+                if (renderOptions.Outline)
+                {
+                    SKPath outlinePath = messageFont.GetTextPath(message, xPos, yPos);
+                    SKPaint outlinePaint = new SKPaint() { Style = SKPaintStyle.Stroke, StrokeWidth = (float)(renderOptions.OutlineSize * renderOptions.EmoteScale), StrokeJoin = SKStrokeJoin.Round, Color = SKColors.Black, IsAntialias = true, LcdRenderText = true, SubpixelText = true, HintingLevel = SKPaintHinting.Full, FilterQuality = SKFilterQuality.High };
+                    sectionImageCanvas.DrawPath(outlinePath, outlinePaint);
+                }
+
+                sectionImageCanvas.DrawText(message, xPos, yPos, messageFont);
+            }
+            drawPos.X += (int)Math.Floor(textWidth + (padding ? (int)Math.Floor(4 * renderOptions.EmoteScale) : 0));
+            return sectionImage;
+        }
         private static SKBitmap AddImageSection(SKBitmap sectionImage, List<SKBitmap> imageList, ChatRenderOptions renderOptions, List<GifEmote> currentGifEmotes, Size canvasSize, ref Point drawPos, int default_x)
+        {
+            imageList.Add(sectionImage);
+            SKBitmap newImage = new SKBitmap((int)canvasSize.Width, (int)canvasSize.Height);
+            using (SKCanvas paddingImageCanvas = new SKCanvas(newImage))
+                paddingImageCanvas.Clear(renderOptions.BackgroundColor);
+            drawPos.X = default_x;
+            drawPos.Y += sectionImage.Height;
+            return newImage;
+        }
+
+        private static SKBitmap AddYTImageSection(SKBitmap sectionImage, List<SKBitmap> imageList, ChatRenderOptions renderOptions, Size canvasSize, ref Point drawPos, int default_x)
         {
             imageList.Add(sectionImage);
             SKBitmap newImage = new SKBitmap((int)canvasSize.Width, (int)canvasSize.Height);
@@ -837,6 +1183,25 @@ namespace TwitchDownloaderCore
         {
             return input > 127;
         }
+
+        public ChatRootYT[] ParseYTJson()
+        {
+            ChatRootYT[] chatJson;
+
+            using (StreamReader r = new StreamReader(renderOptions.InputFile))
+            {
+                using (JsonReader reader = new JsonTextReader(r))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    chatJson = serializer.Deserialize<ChatRootYT[]>(reader);
+                }
+            }
+
+            Console.WriteLine("TEST: " + (chatJson == null));
+
+            return chatJson;
+        }
+
         public ChatRoot ParseJson()
         {
             ChatRoot chatJson;
