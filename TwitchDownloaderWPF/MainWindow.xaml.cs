@@ -67,7 +67,7 @@ namespace TwitchDownloaderWPF
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Main.Content = pageVodDownload;
+            Main.Content = pageChatRender;
             Settings.Default.Upgrade();
             Settings.Default.Save();
             if (!File.Exists("ffmpeg.exe"))

@@ -34,18 +34,12 @@
                 <TextBlock Text="Font Size:" HorizontalAlignment="Right" Margin="0,14,0,0"/>
                 <TextBlock Text="Font Color:" HorizontalAlignment="Right" Margin="0,14,0,0"/>
                 <TextBlock Text="Outline:" HorizontalAlignment="Right" Margin="0,9,0,0"/>
-                <TextBlock Text="Timestamp:" HorizontalAlignment="Right" Margin="0,6,0,0"/>
-                <TextBlock Text="FFZ Emotes:" HorizontalAlignment="Right" Margin="0,6,0,0"/>
-                <TextBlock Text="BTTV Emotes:" HorizontalAlignment="Right" Margin="0,6,0,0"/>
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <ComboBox x:Name="comboFont" MinWidth="100" SelectionChanged="UpdateFont"/>
                 <TextBox x:Name="textFontSize" Text="12" Width="40" HorizontalAlignment="Left" Margin="0,7,0,0" TextChanged="UpdatePreview"/>
                 <xctk:ColorPicker x:Name="colorFont" SelectedColor="#111111" Width="50" UsingAlphaChannel="False" Margin="0,5,0,0" HorizontalAlignment="Left" DropDownBackground="{StaticResource ResourceKey=FixBrush}" SelectedColorChanged="UpdateColor"/>
                 <CheckBox x:Name="checkOutline" Margin="0,6,0,0" Checked="UpdateCheckbox" Unchecked="UpdateCheckbox"/>
-                <CheckBox x:Name="checkTimestamp" Margin="0,6,0,0" Checked="UpdateCheckbox" Unchecked="UpdateCheckbox"/>
-                <CheckBox x:Name="checkFFZ" IsChecked="True" Margin="0,6,0,0"/>
-                <CheckBox x:Name="checkBTTV" IsChecked="True" Margin="0,6,0,0"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="20,0,5,0">
                 <TextBlock Text="Background Color:" HorizontalAlignment="Right"/>
@@ -53,7 +47,6 @@
                 <TextBlock Text="Width:" HorizontalAlignment="Right" Margin="0,13,0,0"/>
                 <TextBlock Text="Update Time:" HorizontalAlignment="Right" Margin="0,13,0,0"/>
                 <TextBlock Text="Framerate:" HorizontalAlignment="Right" Margin="0,13,0,0"/>
-                <TextBlock Text="Sub Messages:" HorizontalAlignment="Right" Margin="0,11,0,0"/>
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <xctk:ColorPicker x:Name="colorBackground" SelectedColor="#111111" Width="50" DropDownBackground="{StaticResource ResourceKey=FixBrush}" SelectedColorChanged="UpdateColor"/>
@@ -61,7 +54,6 @@
                 <TextBox x:Name="textWidth" Text="350" Margin="0,5,0,0" TextChanged="UpdatePreview"/>
                 <TextBox x:Name="textUpdateTime" Text="1.0" Margin="0,5,0,0"/>
                 <TextBox x:Name="textFramerate" Text="60" Margin="0,5,0,0"/>
-                <CheckBox x:Name="checkSub" IsChecked="True" Margin="0,6,0,0"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="20,0,5,0">
                 <TextBlock Text="Live Preview:" HorizontalAlignment="Right" Margin="0,6,0,0"/>
@@ -88,9 +80,6 @@
         <!-- RIGHT -->
         <StackPanel Grid.Column="4" Grid.Row="1" Grid.RowSpan="1" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="btnDonate" ToolTip="Use the program often and want to support me? Buy me a coffee :)" Height="26" Width="40" Click="btnDonate_Click">
-                    <Image Source="Images\donate.png" Height="22" Width="36" Margin="0,2,0,0" ></Image>
-                </Button>
                 <Button x:Name="btnSettings" Height="26" Width="40" Margin="4,0,0,0" Click="btnSettings_Click">
                     <Image Source="Images\settings.png" Height="22" Width="36" Margin="0,2,0,0" ></Image>
                 </Button>

@@ -78,13 +78,13 @@ namespace TwitchDownloaderWPF
                         BackgroundColor = backgroundColor,
                         ChatHeight = Int32.Parse(textHeight.Text),
                         ChatWidth = Int32.Parse(textWidth.Text),
-                        BttvEmotes = (bool)checkBTTV.IsChecked,
-                        FfzEmotes = (bool)checkFFZ.IsChecked,
+/*                        BttvEmotes = (bool)checkBTTV.IsChecked,
+                        FfzEmotes = (bool)checkFFZ.IsChecked,*/
                         Outline = (bool)checkOutline.IsChecked,
                         Font = (string)comboFont.SelectedItem,
                         FontSize = Double.Parse(textFontSize.Text),
                         UpdateRate = Double.Parse(textUpdateTime.Text),
-                        Timestamp = (bool)checkTimestamp.IsChecked,
+/*                        Timestamp = (bool)checkTimestamp.IsChecked,*/
                         MessageColor = messageColor,
                         Framerate = Int32.Parse(textFramerate.Text),
                         InputArgs = Settings.Default.FfmpegInputArgs,
@@ -95,7 +95,7 @@ namespace TwitchDownloaderWPF
                         OutlineSize = 4,
                         FfmpegPath = "ffmpeg",
                         TempFolder = Settings.Default.TempPath,
-                        SubMessages = (bool)checkSub.IsChecked
+/*                        SubMessages = (bool)checkSub.IsChecked*/
                     };
                     options.PaddingLeft = (int)Math.Floor(2 * options.EmoteScale);
 
@@ -143,10 +143,10 @@ namespace TwitchDownloaderWPF
             {
                 comboFont.SelectedItem = Settings.Default.Font;
                 checkOutline.IsChecked = Settings.Default.Outline;
-                checkTimestamp.IsChecked = Settings.Default.Timestamp;
+/*                checkTimestamp.IsChecked = Settings.Default.Timestamp;*/
                 colorBackground.SelectedColor = System.Windows.Media.Color.FromArgb((byte)Settings.Default.BackgroundColorA, (byte)Settings.Default.BackgroundColorR, (byte)Settings.Default.BackgroundColorG, (byte)Settings.Default.BackgroundColorB);
-                checkFFZ.IsChecked = Settings.Default.FFZEmotes;
-                checkBTTV.IsChecked = Settings.Default.BTTVEmotes;
+/*                checkFFZ.IsChecked = Settings.Default.FFZEmotes;
+                checkBTTV.IsChecked = Settings.Default.BTTVEmotes;*/
                 textHeight.Text = Settings.Default.Height.ToString();
                 textWidth.Text = Settings.Default.Width.ToString();
                 textFontSize.Text = Settings.Default.FontSize.ToString("0.##");
@@ -154,7 +154,7 @@ namespace TwitchDownloaderWPF
                 colorFont.SelectedColor = System.Windows.Media.Color.FromRgb((byte)Settings.Default.FontColorR, (byte)Settings.Default.FontColorG, (byte)Settings.Default.FontColorB);
                 textFramerate.Text = Settings.Default.Framerate.ToString();
                 checkMask.IsChecked = Settings.Default.GenerateMask;
-                checkSub.IsChecked = Settings.Default.SubMessages;
+/*                checkSub.IsChecked = Settings.Default.SubMessages;*/
 
                 foreach (VideoContainer container in comboFormat.Items)
                 {
@@ -212,18 +212,18 @@ namespace TwitchDownloaderWPF
         {
             Settings.Default.Font = comboFont.SelectedItem.ToString();
             Settings.Default.Outline = (bool)checkOutline.IsChecked;
-            Settings.Default.Timestamp = (bool)checkTimestamp.IsChecked;
+/*            Settings.Default.Timestamp = (bool)checkTimestamp.IsChecked;*/
             Settings.Default.BackgroundColorR = colorBackground.SelectedColor.Value.R;
             Settings.Default.BackgroundColorG = colorBackground.SelectedColor.Value.G;
             Settings.Default.BackgroundColorB = colorBackground.SelectedColor.Value.B;
             Settings.Default.BackgroundColorA = colorBackground.SelectedColor.Value.A;
-            Settings.Default.FFZEmotes = (bool)checkFFZ.IsChecked;
-            Settings.Default.BTTVEmotes = (bool)checkBTTV.IsChecked;
+/*            Settings.Default.FFZEmotes = (bool)checkFFZ.IsChecked;
+            Settings.Default.BTTVEmotes = (bool)checkBTTV.IsChecked;*/
             Settings.Default.FontColorR = colorFont.SelectedColor.Value.R;
             Settings.Default.FontColorG = colorFont.SelectedColor.Value.G;
             Settings.Default.FontColorB = colorFont.SelectedColor.Value.B;
             Settings.Default.GenerateMask = (bool)checkMask.IsChecked;
-            Settings.Default.SubMessages = (bool)checkSub.IsChecked;
+/*            Settings.Default.SubMessages = (bool)checkSub.IsChecked;*/
             if (comboFormat.SelectedItem != null)
                 Settings.Default.VideoContainer = ((VideoContainer)comboFormat.SelectedItem).Name;
             if (comboCodec.SelectedItem != null)
@@ -399,12 +399,12 @@ namespace TwitchDownloaderWPF
         {
             SettingsPage settings = new SettingsPage();
             settings.ShowDialog();
-            btnDonate.Visibility = Settings.Default.HideDonation ? Visibility.Collapsed : Visibility.Visible;
+            /*btnDonate.Visibility = Settings.Default.HideDonation ? Visibility.Collapsed : Visibility.Visible;*/
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            btnDonate.Visibility = Settings.Default.HideDonation ? Visibility.Collapsed : Visibility.Visible;
+            /*btnDonate.Visibility = Settings.Default.HideDonation ? Visibility.Collapsed : Visibility.Visible;*/
         }
     }
 

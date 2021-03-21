@@ -56,13 +56,13 @@ namespace TwitchDownloader
                     BackgroundColor = backgroundColor,
                     ChatHeight = Int32.Parse(pageChatRender.textHeight.Text),
                     ChatWidth = Int32.Parse(pageChatRender.textWidth.Text),
-                    BttvEmotes = (bool)pageChatRender.checkBTTV.IsChecked,
-                    FfzEmotes = (bool)pageChatRender.checkFFZ.IsChecked,
+/*                    BttvEmotes = (bool)pageChatRender.checkBTTV.IsChecked,
+                    FfzEmotes = (bool)pageChatRender.checkFFZ.IsChecked,*/
                     Outline = (bool)pageChatRender.checkOutline.IsChecked,
                     Font = (string)pageChatRender.comboFont.SelectedItem,
                     FontSize = Double.Parse(pageChatRender.textFontSize.Text),
                     UpdateRate = Double.Parse(pageChatRender.textUpdateTime.Text),
-                    Timestamp = (bool)pageChatRender.checkTimestamp.IsChecked,
+/*                    Timestamp = (bool)pageChatRender.checkTimestamp.IsChecked,*/
                     MessageColor = messageColor,
                     Framerate = Int32.Parse(pageChatRender.textFramerate.Text),
                     InputArgs = Settings.Default.FfmpegInputArgs,

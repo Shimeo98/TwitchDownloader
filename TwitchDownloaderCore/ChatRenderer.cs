@@ -777,47 +777,6 @@ namespace TwitchDownloaderCore
         }
         public SKBitmap DrawBadges(SKBitmap sectionImage, List<SKBitmap> imageList, ChatRenderOptions renderOptions, String imageURL, Size canvasSize, ref Point drawPos)
         {
-
-/*            if (comment.message.user_badges != null)
-            {
-                foreach (var badge in comment.message.user_badges)
-                {
-                    string id = badge._id.ToString();
-                    string version = badge.version.ToString();
-
-                    SKBitmap badgeImage = null;
-                    foreach (var cachedBadge in chatBadges)
-                    {
-                        if (cachedBadge.Name == id)
-                        {
-                            foreach (var cachedVersion in cachedBadge.Versions)
-                            {
-                                if (cachedVersion.Key == version)
-                                {
-                                    badgeImage = cachedVersion.Value;
-                                }
-                            }
-                        }
-                    }
-
-                    if (badgeImage != null)
-                    {
-                        using (SKCanvas sectionImageCanvas = new SKCanvas(sectionImage))
-                        {
-                            float imageRatio = (float)(renderOptions.EmoteScale * 0.5);
-                            float imageSize = badgeImage.Width * imageRatio;
-                            float left = (float)drawPos.X;
-                            float right = imageSize + left;
-                            float top = (float)((sectionImage.Height - imageSize) / 2);
-                            float bottom = imageSize + top;
-                            SKRect drawBox = new SKRect(left, top, right, bottom);
-                            sectionImageCanvas.DrawBitmap(badgeImage, drawBox, imagePaint);
-                            drawPos.X += (int)Math.Floor(20 * renderOptions.EmoteScale);
-                        }
-                    }
-                }
-            }*/
-
             using (SKCanvas sectionImageCanvas = new SKCanvas(sectionImage))
             {
                 sectionImageCanvas.Clear(SKColors.Transparent);

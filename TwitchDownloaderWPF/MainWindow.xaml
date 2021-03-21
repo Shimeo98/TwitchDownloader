@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TwitchDownloaderWPF"
         mc:Ignorable="d"
-        Title="Twitch Downloader" Height="450" Width="850" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="YouTube Chat Renderer" Height="450" Width="850" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="10" />
@@ -21,10 +21,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="btnVodDownload" Margin="5" Grid.Row="1" Grid.Column="1" Content="VOD Downloader" Click="btnVodDownload_Click" />
-        <Button x:Name="btnClipDownload" Margin="5" Grid.Row="1" Grid.Column="2" Content="Clip Downloader" Click="btnClipDownload_Click" />
-        <Button x:Name="btnChatDownload" Margin="5" Grid.Row="1" Grid.Column="3" Content="Chat Downloader" Click="btnChatDownload_Click" />
-        <Button x:Name="btnChatRender" Margin="5" Grid.Row="1" Grid.Column="4" Content="Chat Render" Click="btnChatRender_Click" />
+        <Button x:Name="btnChatRender" Margin="108,0,108,10" Grid.Row="1" Grid.Column="2" Content="Chat Render" Click="btnChatRender_Click" Grid.ColumnSpan="2" />
         <!-- <Button x:Name="btnQueue" Margin="5" Grid.Row="1" Grid.Column="5" Content="Task Queue" Click="btnQueue_Click" /> -->
         <Frame Focusable="False" x:Name="Main" Grid.Column="0" Grid.ColumnSpan="6" Grid.Row="2" NavigationUIVisibility="Hidden"/>
 
