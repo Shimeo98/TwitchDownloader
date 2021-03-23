@@ -296,7 +296,30 @@ namespace TwitchDownloaderCore
             emojiCache.Add(":shelterin:", shelterin);
 
 
+            // TODO: make config file if these change frequently or find a way to pull channel specific emotes
             // For AS -- custom emotes
+            CreateEmote("_KEKW", "https://yt3.ggpht.com/esoGqAaottY7m4u3Ys8Y46RVjF8gtZAR6VCwquY-ftb7ojJyK51mv85ImjEZCYjHVmFr-VGL0w=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_monkaS", "https://yt3.ggpht.com/pu-XuTfpIWV8ebw8zGAwFG02WAJf8_sRsfKJeKuvaU7sMQtVYq76hbDq9u-58zS5PPxCagN6=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_Pepega", "https://yt3.ggpht.com/IIpPg-5chFCZz_E1778CTgCSgSUFp8Jv9HwV4S2tKy7cyLAHbA4wuSbdk5FS8QG8lXxRCqqxHA=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_PepeLaugh", "https://yt3.ggpht.com/Ax32WWS19mID48CvVNB499HXy6P3W_zzf5Qxbmlb5Xkbh9QJeQKxn6mEJpOED_YmG5vkDRAMIg=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_PogU", "https://yt3.ggpht.com/ObA7yPmbPqAaszy64RYAGXPDw8i2IMV9rOSGNwOi-tLHU_iiDs6P5yHH5b31c88EF3c0rhNV34c=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_Sadge", "https://yt3.ggpht.com/WckzVC2Vch9prnjmJt-9Za2tszyhSoxtTcE1Q2Tf5QeTXknD_aIdBBzHnMSOLKhsbsw1oqORWhg=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_PauseChamp", "https://yt3.ggpht.com/ogn1G4usuiLGNHLvF3I-p13nEDtztMxfsy8WhqSLmHWbYqf3HnDCcMlSTqU5zmjwy9W6eeR7y5M=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_3Head", "https://yt3.ggpht.com/gcI2QTNdREJsOstGDoJyUqVIoG1GqNdnUwpSq9yIFyD1mT7EsLiauRNjLQguCiDuxuaRGdOb=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_PogO", "https://yt3.ggpht.com/Ke6M03bMh4P75k4yj_tpRQpjScDgFE_-PtCrBA7XelOqk6ZcOIWCxbSc4sBb8OYs2CP1KsrH=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_5Head", "https://yt3.ggpht.com/-5yb-CjjFl6EG2-7ovZYn3hFdyVHtdQ9NJAHBmvfi216aSwuJilpE9-akronchMYqdR8hT2d=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_Prayge", "https://yt3.ggpht.com/Cu5jJwki4I95q7Liy5TD4UwJb-1ztB3S3JjeJ6u2Wj4JO7xr29aoqbQ7jPJI1-T0DKzqprHN=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_Okayge", "https://yt3.ggpht.com/OLXjqgPYl1cIUrrgbgkj2_nfK57k6nfLWqDqAFsHfKPp_R-ANey4MlSInwhr6RFveNjVydCeWw=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_Henry", "https://yt3.ggpht.com/DJ3mvv3fh4FKWReGWD-mxsbPF6LpDIQvrWyeGbSINhA8VmlKnEbjOU1RnucKPdKWklASNdT7CA=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_EZY", "https://yt3.ggpht.com/66AM07rIHLfrITEfaujEaQTXWGY36szdWCFK7UF26lAxNtvtRVOBhwxwEwoLS28OHyFoed-x=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_WeirdChamp", "https://yt3.ggpht.com/OIb8Je_KKD5wBdTNxCFiK8VnFtJzffYP3gVxafctgqsuHw3D1g5hyShMbf295qlIPH4b4OKnrog=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_BOOBA", "https://yt3.ggpht.com/VU-TAgtvBbPotNapZINBG3ogeqUVG4ZeL0qLu_AALfz8aZuFCGlVjshvCOrvJ2meQ4oOaChqOQ=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_ratJAM", "https://yt3.ggpht.com/PYqY7U1xRHT5zRMVKRYbYzBasuNcdHBPAiF_YwubJjh4bXQvh0l5VlMMXRaoWpHsdmaeVUFPSlA=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_Pog", "https://yt3.ggpht.com/4p-3kwkkIScoQltXvYDUCP-wIPmrExrN_zs0HnTYt3B84KG86T6uXTU9or9jdnDXW0DOJfM_ag=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_grossC", "https://yt3.ggpht.com/cDhj03llDpBtZAw-T1Kbu_RTfwYlam-2ZBo7TM46B9_hqgjcGNBN3gyjPhcSY9eyBTXErESDeg=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+            CreateEmote("_YEP", "https://yt3.ggpht.com/FxvcWSS3nd4_iYqfkwieSxZ6rdEdGP6_E3D0hMFpaNh2XODMCoaDhpcBKKgPqa2jaYTn5teYNw=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
+
+            // without _
             CreateEmote("KEKW", "https://yt3.ggpht.com/esoGqAaottY7m4u3Ys8Y46RVjF8gtZAR6VCwquY-ftb7ojJyK51mv85ImjEZCYjHVmFr-VGL0w=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
             CreateEmote("monkaS", "https://yt3.ggpht.com/pu-XuTfpIWV8ebw8zGAwFG02WAJf8_sRsfKJeKuvaU7sMQtVYq76hbDq9u-58zS5PPxCagN6=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
             CreateEmote("Pepega", "https://yt3.ggpht.com/IIpPg-5chFCZz_E1778CTgCSgSUFp8Jv9HwV4S2tKy7cyLAHbA4wuSbdk5FS8QG8lXxRCqqxHA=w72-h72-c-k-nd", emojiCache, emojiFolder, httpClient);
